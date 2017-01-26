@@ -37,7 +37,6 @@ implicit none ; private
 public calculate_compress_nemo, calculate_density_nemo
 public calculate_density_derivs_nemo
 public calculate_density_scalar_nemo, calculate_density_array_nemo
-
 interface calculate_density_nemo
   module procedure calculate_density_scalar_nemo, calculate_density_array_nemo
 end interface calculate_density_nemo
@@ -356,21 +355,54 @@ subroutine calculate_compress_nemo(T, S, pressure, rho, drho_dp, start, npts)
 ! *  (in)      start - the starting point in the arrays.               *
 ! *  (in)      npts - the number of values to calculate.               *
 ! *====================================================================*
-  real ::  zs,zt,zp
+  real :: zp,zt , zh , zs , zr0, zn , zn0, zn1, zn2, zn3
   integer :: j
 
-  call calculate_density_array_nemo(T, S, pressure, rho, start, npts)
-  !
-  !NOTE: The following calculates the TEOS10 approximation to compressibility
-  !      since the corresponding NEMO approximation is not available yet.
-  !
   do j=start,start+npts-1
-   !Conversions
+    !Conversions
     zs = S(j) !gsw_sr_from_sp(S(j))       !Convert practical salinity to absolute salinity
     zt = T(j) !gsw_ct_from_pt(S(j),T(j))  !Convert potantial temp to conservative temp
     zp = pressure(j)* Pa2db         !Convert pressure from Pascal to decibar
-    call gsw_rho_first_derivatives(zs,zt,zp, drho_dp=drho_dp(j))
+
+    !The following algorithm was provided by Roquet in a private communication.
+    !It is not necessarily the algorithm used in NEMO ocean!
+    zp  = zp * r1_P0 !pressure
+    zt  = zt * r1_T0 !temperature
+    zs  = SQRT( ABS( zs + rdeltaS ) * r1_S0 )   ! square root salinity
+    !
+    zn3 = EOS013*zt   &
+       &   + EOS103*zs+EOS003
+       !
+    zn2 = (EOS022*zt   &
+       &   + EOS112*zs+EOS012)*zt   &
+       &   + (EOS202*zs+EOS102)*zs+EOS002
+       !
+    zn1 = (((EOS041*zt   &
+       &   + EOS131*zs+EOS031)*zt   &
+       &   + (EOS221*zs+EOS121)*zs+EOS021)*zt   &
+       &   + ((EOS311*zs+EOS211)*zs+EOS111)*zs+EOS011)*zt   &
+       &   + (((EOS401*zs+EOS301)*zs+EOS201)*zs+EOS101)*zs+EOS001
+       !
+    zn0 = (((((EOS060*zt   &
+       &   + EOS150*zs+EOS050)*zt   &
+       &   + (EOS240*zs+EOS140)*zs+EOS040)*zt   &
+       &   + ((EOS330*zs+EOS230)*zs+EOS130)*zs+EOS030)*zt   &
+       &   + (((EOS420*zs+EOS320)*zs+EOS220)*zs+EOS120)*zs+EOS020)*zt   &
+       &   + ((((EOS510*zs+EOS410)*zs+EOS310)*zs+EOS210)*zs+EOS110)*zs+EOS010)*zt   &
+       &   + (((((EOS600*zs+EOS500)*zs+EOS400)*zs+EOS300)*zs+EOS200)*zs+EOS100)*zs+EOS000
+       !
+    zn  = ( ( zn3 * zp + zn2 ) * zp + zn1 ) * zp + zn0
+    !
+    zr0 = (((((R05 * zp+R04) * zp+R03 ) * zp+R02 ) * zp+R01) * zp+R00) * zp
+    !
+    rho(j) =  ( zn + zr0 ) ! density
+
+    !drho_dp
+    drho_dp(j) = (3*zn3 * zp + 2*zn2) * zp + zn1 &
+               + ((((6*R05 * zp + 5*R04) * zp + 4*R03) * zp + 3*R02) * zp + 2*R01 ) *zp + R00  
+
  enddo
+
 end subroutine calculate_compress_nemo
 
 end module MOM_EOS_NEMO
