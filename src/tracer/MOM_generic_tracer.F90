@@ -300,14 +300,19 @@ contains
             endif
          enddo; enddo ; enddo
 
+         ! Disabling this kludge that sets the OBGC tracer named 'cased' to zero.
+         ! This block lives in MOM6, since the tracer initialization occurs
+         ! here. Ideally, it should be somewhere in the generic_tracers package.
+         ! In any case, a logical flag is needed to turn this block on and off.
+
          !jgj: Reset CASED to 0 below K=1
-         if(trim(g_tracer_name) .eq. 'cased') then
-            do k=2,nk ; do j=jsc,jec ; do i=isc,iec
-               if(tr_ptr(i,j,k) .ne. CS%tracer_land_val) then
-                 tr_ptr(i,j,k) = 0.0
-               endif
-            enddo; enddo ; enddo
-         endif
+         !if(trim(g_tracer_name) .eq. 'cased') then
+         !   do k=2,nk ; do j=jsc,jec ; do i=isc,iec
+         !      if(tr_ptr(i,j,k) .ne. CS%tracer_land_val) then
+         !        tr_ptr(i,j,k) = 0.0
+         !      endif
+         !   enddo; enddo ; enddo
+         !endif
 
        else !Do it old way if the tracer is not registered to start from a specific source file.
             !This path should be deprecated if all generic tracers are required to start from specified sources.
