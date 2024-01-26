@@ -24,7 +24,6 @@ use mpp_domains_mod, only : To_East => WUPDATE, To_West => EUPDATE, Omit_Corners
 use mpp_domains_mod, only : To_North => SUPDATE, To_South => NUPDATE
 use mpp_domains_mod, only : CENTER, CORNER, NORTH_FACE => NORTH, EAST_FACE => EAST
 use fms_io_mod,      only : file_exist, parse_mask_table
-use fms_affinity_mod, only : fms_affinity_init, fms_affinity_set, fms_affinity_get
 
 ! This subroutine is not in MOM6/src but may be required by legacy drivers
 ! use mpp_domains_mod, only : global_field_sum => mpp_global_sum

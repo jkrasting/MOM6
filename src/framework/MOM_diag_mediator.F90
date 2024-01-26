@@ -11,7 +11,7 @@ use MOM_cpu_clock,        only : cpu_clock_id, cpu_clock_begin, cpu_clock_end
 use MOM_cpu_clock,        only : CLOCK_MODULE, CLOCK_ROUTINE
 use MOM_diag_manager_infra, only : MOM_diag_manager_init, MOM_diag_manager_end
 use MOM_diag_manager_infra, only : diag_axis_init=>MOM_diag_axis_init, get_MOM_diag_axis_name
-use MOM_diag_manager_infra, only : send_data_infra, MOM_diag_field_add_attribute, EAST, NORTH
+use MOM_diag_manager_infra, only : send_data_infra, MOM_diag_field_add_attribute
 use MOM_diag_manager_infra, only : register_diag_field_infra, register_static_field_infra
 use MOM_diag_manager_infra, only : get_MOM_diag_field_id, DIAG_FIELD_NOT_FOUND
 use MOM_diag_remap,       only : diag_remap_ctrl, diag_remap_update, diag_remap_calc_hmask
@@ -381,34 +381,34 @@ subroutine set_axes_info(G, GV, US, param_file, diag_cs, set_vertical)
   if (G%symmetric) then
     if (diag_cs%grid_space_axes) then
       id_xq = diag_axis_init('iq', IaxB(G%isgB:G%iegB), 'none', 'x', &
-          'q point grid-space longitude', G%Domain, position=EAST)
+          'q point grid-space longitude', G%Domain)
       id_yq = diag_axis_init('jq', JaxB(G%jsgB:G%jegB), 'none', 'y', &
-          'q point grid space latitude', G%Domain, position=NORTH)
+          'q point grid space latitude', G%Domain)
     else
       id_xq = diag_axis_init('xq', G%gridLonB(G%isgB:G%iegB), G%x_axis_units, 'x', &
-          'q point nominal longitude', G%Domain, position=EAST)
+          'q point nominal longitude', G%Domain)
       id_yq = diag_axis_init('yq', G%gridLatB(G%jsgB:G%jegB), G%y_axis_units, 'y', &
-          'q point nominal latitude', G%Domain, position=NORTH)
+          'q point nominal latitude', G%Domain)
     endif
   else
     if (diag_cs%grid_space_axes) then
       id_xq = diag_axis_init('Iq', IaxB(G%isg:G%ieg), 'none', 'x', &
-          'q point grid-space longitude', G%Domain, position=EAST)
+          'q point grid-space longitude', G%Domain)
       id_yq = diag_axis_init('Jq', JaxB(G%jsg:G%jeg), 'none', 'y', &
-          'q point grid space latitude', G%Domain, position=NORTH)
+          'q point grid space latitude', G%Domain)
     else
       id_xq = diag_axis_init('xq', G%gridLonB(G%isg:G%ieg), G%x_axis_units, 'x', &
-          'q point nominal longitude', G%Domain, position=EAST)
+          'q point nominal longitude', G%Domain)
       id_yq = diag_axis_init('yq', G%gridLatB(G%jsg:G%jeg), G%y_axis_units, 'y', &
-          'q point nominal latitude', G%Domain, position=NORTH)
+          'q point nominal latitude', G%Domain)
     endif
   endif
 
   if (diag_cs%grid_space_axes) then
     id_xh = diag_axis_init('ih', iax(G%isg:G%ieg), 'none', 'x', &
-        'h point grid-space longitude', G%Domain, position=EAST)
+        'h point grid-space longitude', G%Domain)
     id_yh = diag_axis_init('jh', jax(G%jsg:G%jeg), 'none', 'y', &
-        'h point grid space latitude', G%Domain, position=NORTH)
+        'h point grid space latitude', G%Domain)
   else
     id_xh = diag_axis_init('xh', G%gridLonT(G%isg:G%ieg), G%x_axis_units, 'x', &
         'h point nominal longitude', G%Domain)

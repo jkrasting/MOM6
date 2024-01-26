@@ -5,7 +5,6 @@ module MOM_IS_diag_mediator
 
 use MOM_coms,          only : PE_here
 use MOM_diag_manager_infra,  only : MOM_diag_manager_init, send_data_infra, MOM_diag_axis_init
-use MOM_diag_manager_infra,  only : EAST, NORTH
 use MOM_diag_manager_infra,  only : register_static_field_infra
 use MOM_diag_manager_infra,  only : register_diag_field_infra
 use MOM_error_handler, only : MOM_error, FATAL, is_root_pe, assert
@@ -151,15 +150,15 @@ subroutine set_IS_axes_info(G, param_file, diag_cs, axes_set_name)
 
   if (G%symmetric) then
     id_xq = MOM_diag_axis_init('xB', G%gridLonB(G%isgB:G%iegB), G%x_axis_units, 'x', &
-          'Boundary point nominal longitude', G%Domain, position=EAST, set_name=set_name)
+          'Boundary point nominal longitude', G%Domain)
     id_yq = MOM_diag_axis_init('yB', G%gridLatB(G%jsgB:G%jegB), G%y_axis_units, 'y', &
-          'Boundary point nominal latitude', G%Domain, position=NORTH, set_name=set_name)
+          'Boundary point nominal latitude', G%Domain)
 
   else
     id_xq = MOM_diag_axis_init('xB', G%gridLonB(G%isg:G%ieg), G%x_axis_units, 'x', &
-          'Boundary point nominal longitude', G%Domain, position=EAST, set_name=set_name)
+          'Boundary point nominal longitude', G%Domain)
     id_yq = MOM_diag_axis_init('yB', G%gridLatB(G%jsg:G%jeg), G%y_axis_units, 'y', &
-          'Boundary point nominal latitude', G%Domain, position=NORTH, set_name=set_name)
+          'Boundary point nominal latitude', G%Domain)
 
   endif
   id_xh = MOM_diag_axis_init('xT', G%gridLonT(G%isg:G%ieg), G%x_axis_units, 'x', &
